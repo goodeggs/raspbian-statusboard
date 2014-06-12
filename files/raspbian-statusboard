@@ -1,7 +1,8 @@
 #!/bin/sh
 . /etc/default/raspbian-statusboard
 
-shift_state; if [ $? -eq 0 ]; then
+# http://stackoverflow.com/questions/13657889/check-if-the-shift-key-is-currently-being-held-in-the-linux-text-fb-console
+state=`shift_state` && if [ $(($state & 1)) -eq 1 ]; then
   mount -o remount,rw /
   RAILS_ENV=production wpa_cli_web -p 3000 start 2>&1 >> /var/log/wpa_cli_web.log &
   STATUSBOARD_URL="http://localhost:3000"
