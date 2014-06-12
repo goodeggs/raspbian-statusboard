@@ -1,5 +1,6 @@
 - name: raspbian-statusboard
   hosts: pi
+  gather_facts: false
   tasks:
 
     - name: remount rw
