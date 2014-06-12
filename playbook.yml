@@ -35,10 +35,17 @@
     - name: build shift_state
       command: gcc -o /usr/local/bin/shift_state shift_state.c
 
-    # for wpa_cli_web
+    # for raspbian-statusboard-web dependencies
     - name: install ruby-dev
       apt: package=ruby-dev state=present
 
-    - name: install wpa_cli_web
-      gem: name=wpa_cli_web state=latest
+    # for specific_install
+    - name: update rubygems
+      shell: REALLY_GEM_UPDATE_SYSTEM=1 gem update --system
+
+    - name: install specific_install
+      gem: name=specific_install state=present
+
+    - name: install raspbian-statusboard-web
+      command: gem specific_install https://github.com/goodeggs/raspbian-statusboard-web.git
 
