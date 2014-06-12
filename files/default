@@ -1,0 +1,10 @@
+# Defaults for raspbian-statusboard
+
+STATUSBOARD_BIN=midori
+
+# This is eval'd later so $STATUSBOARD_URL can be overridden during setup.
+# If you change the args, ensure that variable is still referenced and quoted.
+STATUSBOARD_ARGS="-e Fullscreen -a \$STATUSBOARD_URL"
+
+STATUSBOARD_URL="http://github.com/goodeggs/raspbian-statusboard/blob/scan/README.md"
+

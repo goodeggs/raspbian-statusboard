@@ -1,0 +1,10 @@
+#!/bin/sh
+. /etc/default/raspbian-statusboard
+
+shift_state; if [ $? -eq 0 ]; then
+  mount -o remount,rw /
+  RAILS_ENV=production wpa_cli_web -p 3000 start 2>&1 >> /var/log/wpa_cli_web.log &
+  STATUSBOARD_URL="http://localhost:3000"
+fi
+
+eval \$STATUSBOARD_BIN $STATUSBOARD_ARGS
