@@ -34,7 +34,7 @@
       copy: src=files/shift_state.c dest=/tmp/ mode=0644 owner=root group=root
 
     - name: build shift_state
-      command: gcc -o /usr/local/bin/shift_state shift_state.c
+      command: gcc -o /usr/local/bin/shift_state /tmp/shift_state.c
 
     # for raspbian-statusboard-web dependencies
     - name: install ruby-dev
@@ -49,4 +49,14 @@
 
     - name: install raspbian-statusboard-web
       command: gem specific_install https://github.com/goodeggs/raspbian-statusboard-web.git
+
+    - name: reboot
+      command: reboot
+
+    - name: wait for reboot
+      pause: seconds=30
+
+    - name: wait for ssh
+      local_action: wait_for host={{inventory_hostname}} port=22 timeout=60 state=started
+      sudo: false
 
