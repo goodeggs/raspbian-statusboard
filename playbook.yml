@@ -4,7 +4,12 @@
   tasks:
 
     - name: remount rw
-      raw: mount -o remount,rw /
+      raw: mount -o remount,rw {{item}}
+      with_items:
+        - /
+        - /etc
+        - /home
+        - /var
 
     # taken from https://github.com/asb/raspi-config/blob/master/raspi-config
     - name: enable Raspbian Desktop
