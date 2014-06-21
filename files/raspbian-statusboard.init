@@ -1,0 +1,16 @@
+#!/bin/sh
+. /etc/default/raspbian-statusboard
+
+echo -n "raspbian-statusboard: checking shift in 5s... "
+sleep 5
+
+# http://stackoverflow.com/questions/13657889/check-if-the-shift-key-is-currently-being-held-in-the-linux-text-fb-console
+state=`shift_state` && if [ $(($state & 1)) -eq 1 ]; then
+  echo "on!  will boot setup."
+  mount -o remount,rw /
+  mount -o remount,rw /etc
+  RACK_ENV=production wpa_cli_web -p 3000 start 2>&1 >> /var/log/wpa_cli_web.log &
+  touch /tmp/.raspbian-statusboard-setup
+else
+  echo "off.  will boot normally."
+fi

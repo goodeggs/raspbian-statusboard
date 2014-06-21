@@ -29,7 +29,13 @@
     - name: install defaults
       copy: src=files/default dest=/etc/default/raspbian-statusboard mode=0644 owner=root group=root
 
-    - name: install raspbian-statusboard
+    - name: install raspbian-statusboard init script
+      copy: src=files/raspbian-statusboard.init dest=/etc/init.d/raspbian-statusboard mode=0755 owner=root group=root
+
+    - name: enable raspbian-statusboard init script
+      command: update-rc.d raspbian-statusboard start 20 2 3 4 5
+
+    - name: install raspbian-statusboard bin
       copy: src=files/raspbian-statusboard dest=/usr/local/bin/raspbian-statusboard mode=0755 owner=root group=root
 
     - name: install LXDE autostart
