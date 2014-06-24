@@ -23,8 +23,11 @@
     - name: modify lightdm.conf
       lineinfile: dest=/etc/lightdm/lightdm.conf regexp="^#xserver-command=" line="xserver-command=X -s 0 dpms" state=present
 
-    - name: install unclutter
-      apt: package=unclutter state=present
+    - name: install {{item}}
+      apt: package={{item}} state=present
+      with_items:
+        - unclutter
+        - chromium-browser
 
     - name: install defaults
       copy: src=files/default dest=/etc/default/raspbian-statusboard mode=0644 owner=root group=root
@@ -32,11 +35,8 @@
     - name: install raspbian-statusboard init script
       copy: src=files/raspbian-statusboard.init dest=/etc/init.d/raspbian-statusboard mode=0755 owner=root group=root
 
-    - name: enable raspbian-statusboard init script
-      command: update-rc.d raspbian-statusboard start 20 2 3 4 5
-
     - name: install raspbian-statusboard bin
-      copy: src=files/raspbian-statusboard dest=/usr/local/bin/raspbian-statusboard mode=0755 owner=root group=root
+      copy: src=files/raspbian-statusboard dest=/usr/bin/raspbian-statusboard mode=0755 owner=root group=root
 
     - name: install LXDE autostart
       copy: src=files/autostart dest=/etc/xdg/lxsession/LXDE/autostart mode=0644 owner=root group=root
@@ -45,7 +45,7 @@
       copy: src=files/shift_state.c dest=/tmp/ mode=0644 owner=root group=root
 
     - name: build shift_state
-      command: gcc -o /usr/local/bin/shift_state /tmp/shift_state.c
+      command: gcc -o /usr/bin/shift_state /tmp/shift_state.c
 
     # for raspbian-statusboard-web dependencies
     - name: install ruby-dev

@@ -1,16 +1,39 @@
 #!/bin/sh
+### BEGIN INIT INFO
+# Provides:          raspbian-statusboard
+# Required-Start:    $local_fs $network $named $time $syslog
+# Required-Stop:     $local_fs $network $named $time $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Description:       raspbian-statusboard startup script
+### END INIT INFO
+
 . /etc/default/raspbian-statusboard
 
-echo -n "raspbian-statusboard: checking shift in 5s... "
-sleep 5
+start() {
+  echo "checking shift in 5s... " >&2
+  sleep 5
+  
+  # http://stackoverflow.com/questions/13657889/check-if-the-shift-key-is-currently-being-held-in-the-linux-text-fb-console
+  state=`shift_state` && if [ $(($state & 1)) -eq 1 ]; then
+    echo "shift was on!  booting setup." >&2
+    mount -o remount,rw /
+    mount -o remount,rw /etc
+    wpa_cli_web -p 3000 start 2>&1 >> /var/log/wpa_cli_web.log &
+    touch /tmp/.raspbian-statusboard-setup
+  else
+    echo "shift was off.  booting normally." >&2
+  fi
+}
 
-# http://stackoverflow.com/questions/13657889/check-if-the-shift-key-is-currently-being-held-in-the-linux-text-fb-console
-state=`shift_state` && if [ $(($state & 1)) -eq 1 ]; then
-  echo "on!  will boot setup."
-  mount -o remount,rw /
-  mount -o remount,rw /etc
-  RACK_ENV=production wpa_cli_web -p 3000 start 2>&1 >> /var/log/wpa_cli_web.log &
-  touch /tmp/.raspbian-statusboard-setup
-else
-  echo "off.  will boot normally."
-fi
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    ;;
+  restart)
+    ;;
+  *)
+    echo "Usage: $0 {start}"
+esac

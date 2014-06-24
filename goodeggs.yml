@@ -1,0 +1,43 @@
+- name: Good Eggs extras for raspbian-statusboard
+  hosts: pi
+  gather_facts: false
+  tasks:
+
+    - name: remount rw
+      raw: mount -o remount,rw {{item}}
+      with_items:
+        - /
+        - /boot
+        - /etc
+        - /home
+        - /var
+
+    - name: change default password
+      shell: echo "pi:{{ lookup('env', 'PASSWORD') }}" | chpasswd
+
+    - name: install our preferred /boot/config.txt
+      copy:
+        dest: /boot/config.txt
+        content: |
+          disable_overscan=1
+          arm_freq=900
+          core_freq=250
+          sdram_freq=450
+          over_voltage=2
+
+    - name: install ntpdate
+      apt: package=ntpdate state=present
+
+    - name: configure ntpdate
+      command: ntpdate -u ntp.ubuntu.com
+
+    - name: reboot
+      command: reboot
+
+    - name: wait for reboot
+      pause: seconds=30
+
+    - name: wait for ssh
+      local_action: wait_for host={{inventory_hostname}} port=22 timeout=60 state=started
+      sudo: false
+
